@@ -31,7 +31,7 @@ export default function App() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
                             </svg>
                             <span className="font-bold text-2xl tracking-tight text-[#0a2540]">
-                                LA Auto<span className="text-[#ff6b00]"> Glass</span>
+                                Leyvas Auto<span className="text-[#ff6b00]"> Glass</span>
                             </span>
                         </div>
 
@@ -42,8 +42,8 @@ export default function App() {
                         </nav>
 
                         <div className="flex items-center gap-4">
-                            <a href="tel:+15551234567" className="hidden lg:flex items-center gap-2 text-[#0a2540] font-bold text-lg hover:text-[#ff6b00] transition-colors">
-                                (555) 123-4567
+                            <a href="tel:+16823920431" className="hidden lg:flex items-center gap-2 text-[#0a2540] font-bold text-lg hover:text-[#ff6b00] transition-colors">
+                                (682) 392-0431
                             </a>
                             <a href="#quote" className="bg-[#ff6b00] hover:bg-[#e56000] text-white px-5 py-2.5 rounded-full font-semibold shadow-md transition-all text-sm sm:text-base">
                                 Get a Quote
@@ -78,8 +78,8 @@ export default function App() {
                             <a href="#quote" className="bg-[#ff6b00] hover:bg-[#e56000] text-white px-8 py-4 rounded-lg font-bold text-lg text-center shadow-lg transition-all flex justify-center items-center gap-2">
                                 Get Your Free Quote
                             </a>
-                            <a href="tel:+15551234567" className="bg-white hover:bg-gray-50 text-[#0a2540] px-8 py-4 rounded-lg font-bold text-lg text-center shadow-lg transition-all flex justify-center items-center gap-2">
-                                Call (555) 123-4567
+                            <a href="tel:+16823920431" className="bg-white hover:bg-gray-50 text-[#0a2540] px-8 py-4 rounded-lg font-bold text-lg text-center shadow-lg transition-all flex justify-center items-center gap-2">
+                                Call/Text (682) 392-0431
                             </a>
                         </div>
                     </div>
@@ -144,7 +144,7 @@ export default function App() {
                             <div className="w-14 h-14 bg-[#e6f0fa] rounded-xl flex items-center justify-center mb-6 text-[#0a2540]">
                                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
                             </div>
-                            <h4 className="text-xl font-bold text-gray-900 mb-3">ADAS Calibration</h4>
+                            <h4 className="text-xl font-bold text-gray-900 mb-3">Manual Calibration</h4>
                             <p className="text-gray-600 mb-6 text-sm leading-relaxed">Ensuring your car&apos;s safety sensors are perfectly aligned after every windshield installation.</p>
                         </div>
                     </div>
@@ -184,8 +184,8 @@ export default function App() {
                                 </li>
                             </ul>
 
-                            <a href="tel:+15551234567" className="text-[#0a2540] font-black text-xl hover:text-[#ff6b00] transition-colors block border-t border-gray-100 pt-8">
-                                Questions? Call us: (555) 123-4567
+                            <a href="tel:+16823920431" className="text-[#0a2540] font-black text-xl hover:text-[#ff6b00] transition-colors block border-t border-gray-100 pt-8">
+                                Questions? Call/Text us: (682) 392-0431
                             </a>
                         </div>
                     </div>
@@ -216,7 +216,7 @@ export default function App() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-[#0a2540] mb-2">Phone</label>
-                                        <input suppressHydrationWarning type="tel" required className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-[#ff6b00] outline-none transition-all" placeholder="(555) 000-0000" />
+                                        <input suppressHydrationWarning type="tel" required className="w-full px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-[#ff6b00] outline-none transition-all" placeholder="(555) 555-5555" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-[#0a2540] mb-2">Zip Code (for Mobile Service)</label>
@@ -312,7 +312,7 @@ export default function App() {
             </section>
 
             <footer className="bg-gray-900 text-gray-500 py-12 text-center text-xs">
-                <p>&copy; 2026 LA Auto Glass. All rights reserved.</p>
+                <p>&copy; 2026 Leyvas Auto Glass. All rights reserved.</p>
             </footer>
         </div>
     );
