@@ -1,5 +1,5 @@
-// "use client";
 
+// import Image from "next/image";
 // import React, { useMemo, useState } from "react";
 // import {
 //   ArrowRight,
@@ -10,7 +10,6 @@
 //   MapPin,
 //   Phone,
 //   ShieldCheck,
-//   Sparkles,
 //   Star,
 //   Wrench,
 //   Zap,
@@ -81,12 +80,15 @@
 //       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/85 backdrop-blur-xl">
 //         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 //           <a href="#home" className="flex items-center">
-//             <img
-//                 src="/images/leyvas-logo.png"
-//                 alt="Leyvas Auto Glass logo"
-//                 className="h-14 w-auto"
+//             <Image
+//               src="/images/leyvas-logo.png"
+//               alt="Leyvas Auto Glass logo"
+//               width={180}
+//               height={64}
+//               priority
+//               className="h-14 w-auto"
 //             />
-//             </a>
+//           </a>
 
 //           <nav className="hidden items-center gap-8 md:flex">
 //             <a href="#services" className="text-sm font-semibold text-slate-300 hover:text-white">
@@ -167,11 +169,16 @@
 //           <div className="relative">
 //             <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-orange-500/30 to-sky-500/10 blur-2xl" />
 //             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-3 shadow-2xl backdrop-blur">
-//               <img
-//                 src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80"
-//                 alt="Car windshield close-up for mobile auto glass service"
-//                 className="h-[520px] w-full rounded-[1.5rem] object-cover opacity-90"
-//               />
+//               <div className="relative h-[520px] w-full overflow-hidden rounded-[1.5rem]">
+//                 <Image
+//                   src="/images/car-windshield.jpg"
+//                   alt="Car windshield close-up for mobile auto glass service"
+//                   fill
+//                   priority
+//                   sizes="(min-width: 1024px) 50vw, 100vw"
+//                   className="object-cover opacity-90"
+//                 />
+//               </div>
 //               <div className="absolute bottom-7 left-7 right-7 rounded-3xl border border-white/15 bg-slate-950/85 p-5 text-white shadow-2xl backdrop-blur-xl">
 //                 <div className="flex items-start justify-between gap-4">
 //                   <div>
@@ -511,6 +518,7 @@ const trustItems = [
 export default function LeyvasAutoGlassLandingPage() {
   const [selectedTime, setSelectedTime] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const nextDay = useMemo(() => {
     const date = new Date();
@@ -523,9 +531,36 @@ export default function LeyvasAutoGlassLandingPage() {
     });
   }, []);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+    setSubmitError("");
+
+    const formData = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...payload,
+          appointmentWindow: selectedTime,
+          serviceDate: nextDay,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to submit request");
+      }
+
+      setSubmitted(true);
+      event.currentTarget.reset();
+      setSelectedTime("");
+    } catch (error) {
+      setSubmitError("Something went wrong. Please call or text us directly at (682) 392-0431.");
+    }
   }
 
   return (
@@ -769,10 +804,10 @@ export default function LeyvasAutoGlassLandingPage() {
 
             <form onSubmit={handleSubmit} className="rounded-[2rem] bg-white p-5 text-slate-950 shadow-2xl sm:p-8 lg:p-10">
               <div className="grid gap-6 md:grid-cols-2">
-                <Field label="First name" placeholder="John" required />
-                <Field label="Last name" placeholder="Doe" required />
-                <Field label="Phone number" placeholder="(682) 000-0000" type="tel" required />
-                <Field label="ZIP code" placeholder="76102" required />
+                <Field name="firstName" label="First name" placeholder="John" required />
+                <Field name="lastName" label="Last name" placeholder="Doe" required />
+                <Field name="phone" label="Phone number" placeholder="(682) 000-0000" type="tel" required />
+                <Field name="zipCode" label="ZIP code" placeholder="76102" required />
               </div>
 
               <div className="mt-8 border-t border-slate-100 pt-8">
@@ -780,12 +815,12 @@ export default function LeyvasAutoGlassLandingPage() {
                   Vehicle details
                 </h3>
                 <div className="mt-5 grid gap-6 md:grid-cols-3">
-                  <Field label="Year" placeholder="2022" required />
-                  <Field label="Make" placeholder="Toyota" required />
-                  <Field label="Model" placeholder="Camry" required />
+                  <Field name="year" label="Year" placeholder="2022" required />
+                  <Field name="make" label="Make" placeholder="Toyota" required />
+                  <Field name="model" label="Model" placeholder="Camry" required />
                 </div>
                 <div className="mt-6">
-                  <Field label="VIN number" placeholder="Optional, but helpful for exact fit" />
+                  <Field name="vin" label="VIN number" placeholder="Optional, but helpful for exact fit" />
                 </div>
               </div>
 
@@ -796,7 +831,7 @@ export default function LeyvasAutoGlassLandingPage() {
                 <div className="mt-5 grid gap-6 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-800">Type of glass</span>
-                    <select className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-4 font-semibold outline-none transition focus:border-orange-500">
+                    <select name="glassType" className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-4 font-semibold outline-none transition focus:border-orange-500">
                       <option>Windshield</option>
                       <option>Driver front door glass</option>
                       <option>Passenger front door glass</option>
@@ -807,7 +842,7 @@ export default function LeyvasAutoGlassLandingPage() {
                   </label>
                   <label className="block">
                     <span className="mb-2 block text-sm font-black text-slate-800">Special features</span>
-                    <select className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-4 font-semibold outline-none transition focus:border-orange-500">
+                    <select name="specialFeatures" className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-4 font-semibold outline-none transition focus:border-orange-500">
                       <option>I am not sure</option>
                       <option>No special features</option>
                       <option>Rain sensor / auto wipers</option>
@@ -820,6 +855,7 @@ export default function LeyvasAutoGlassLandingPage() {
                 <label className="mt-6 block">
                   <span className="mb-2 block text-sm font-black text-slate-800">Notes</span>
                   <textarea
+                    name="notes"
                     className="h-28 w-full resize-none rounded-2xl border-2 border-slate-100 px-4 py-4 font-semibold outline-none transition focus:border-orange-500"
                     placeholder="Tell us what happened, where the car is located, or when you need service."
                   />
@@ -855,6 +891,12 @@ export default function LeyvasAutoGlassLandingPage() {
               {submitted && (
                 <div className="mt-8 rounded-3xl border-2 border-emerald-200 bg-emerald-50 p-5 text-center font-black text-emerald-800">
                   Request received. We will call or text shortly to confirm your quote and service window.
+                </div>
+              )}
+
+              {submitError && (
+                <div className="mt-8 rounded-3xl border-2 border-red-200 bg-red-50 p-5 text-center font-black text-red-700">
+                  {submitError}
                 </div>
               )}
 
@@ -898,11 +940,12 @@ export default function LeyvasAutoGlassLandingPage() {
   );
 }
 
-function Field({ label, placeholder, type = "text", required = false }) {
+function Field({ name, label, placeholder, type = "text", required = false }) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-black text-slate-800">{label}</span>
       <input
+        name={name}
         type={type}
         required={required}
         placeholder={placeholder}
@@ -911,4 +954,3 @@ function Field({ label, placeholder, type = "text", required = false }) {
     </label>
   );
 }
-
