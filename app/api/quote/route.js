@@ -31,7 +31,7 @@ export async function POST(request) {
 
     await transporter.sendMail({
       from: `"Leyvas Auto Glass Website" <${process.env.GMAIL_USER}>`,
-      to: "javierleyva0407@gmail.com",
+      to: "leyvasautoglass@gmail.com",
       subject: "New Auto Glass Service Request",
       html: `
         <h2>New Service Request</h2>
