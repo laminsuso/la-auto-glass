@@ -22,11 +22,24 @@ export async function POST(request) {
     } = data;
 
     //this is the transporter configuration for sending emails using Gmail's SMTP server
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: process.env.GMAIL_USER,
+    //     pass: process.env.GMAIL_APP_PASSWORD,
+    //   },
+    // });
+
+    const user = process.env.GMAIL_USER?.trim();
+    const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user,
+        pass,
       },
     });
 
