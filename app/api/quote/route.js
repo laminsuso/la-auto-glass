@@ -21,6 +21,7 @@ export async function POST(request) {
       serviceDate,
     } = data;
 
+    //this is the transporter configuration for sending emails using Gmail's SMTP server
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
