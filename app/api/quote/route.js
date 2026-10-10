@@ -1,84 +1,87 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+export const runtime = "nodejs";
+
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 export async function POST(request) {
+  const user = process.env.GMAIL_USER?.trim();
+  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
+
+  if (!user || !pass) {
+    console.error("QUOTE_CONFIG_ERROR: Missing GMAIL_USER or GMAIL_APP_PASSWORD");
+    return NextResponse.json(
+      { success: false, message: "Email service is not configured" },
+      { status: 503 }
+    );
+  }
+
+  let data;
   try {
-    const data = await request.json();
+    data = await request.json();
+  } catch {
+    return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+  }
 
-    const {
-      firstName,
-      lastName,
-      phone,
-      zipCode,
-      year,
-      make,
-      model,
-      vin,
-      glassType,
-      specialFeatures,
-      notes,
-      appointmentWindow,
-      serviceDate,
-    } = data;
+  const required = ["firstName", "lastName", "phone", "zipCode", "year", "make", "model", "glassType", "serviceDate", "appointmentWindow"];
+  const missing = required.filter((key) => !String(data?.[key] ?? "").trim());
+  if (missing.length) {
+    return NextResponse.json({ success: false, message: "Missing required fields", fields: missing }, { status: 400 });
+  }
 
-    //this is the transporter configuration for sending emails using Gmail's SMTP server
-    // const transporter = nodemailer.createTransport({
-    //   service: "gmail",
-    //   auth: {
-    //     user: process.env.GMAIL_USER,
-    //     pass: process.env.GMAIL_APP_PASSWORD,
-    //   },
-    // });
+  const fields = [
+    ["Name", `${data.firstName} ${data.lastName}`],
+    ["Phone", data.phone], ["ZIP Code", data.zipCode],
+    ["Year", data.year], ["Make", data.make], ["Model", data.model],
+    ["VIN", data.vin || "Not provided"], ["Glass Type", data.glassType],
+    ["Special Features", data.specialFeatures || "None"],
+    ["Notes", data.notes || "No notes provided"],
+    ["Date", data.serviceDate], ["Time Window", data.appointmentWindow],
+  ];
+  const html = `<h2>New Auto Glass Service Request</h2>${fields
+    .map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`)
+    .join("")}`;
+  const text = fields.map(([label, value]) => `${label}: ${String(value ?? "")}`).join("\n");
 
-    const user = process.env.GMAIL_USER?.trim();
-    const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "");
-
+  try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
-      auth: {
-        user,
-        pass,
-      },
+      connectionTimeout: 12000,
+      greetingTimeout: 12000,
+      socketTimeout: 20000,
+      auth: { user, pass },
     });
 
     await transporter.sendMail({
-      from: `"Leyvas Auto Glass Website" <${process.env.GMAIL_USER}>`,
-      to: "leyvasautoglass@gmail.com",
+      from: `"Leyvas Auto Glass Website" <${user}>`,
+      to: user,
+      replyTo: user,
       subject: "New Auto Glass Service Request",
-      html: `
-        <h2>New Service Request</h2>
-
-        <h3>Customer Information</h3>
-        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>ZIP Code:</strong> ${zipCode}</p>
-
-        <h3>Vehicle Information</h3>
-        <p><strong>Year:</strong> ${year}</p>
-        <p><strong>Make:</strong> ${make}</p>
-        <p><strong>Model:</strong> ${model}</p>
-        <p><strong>VIN:</strong> ${vin || "Not provided"}</p>
-
-        <h3>Service Needed</h3>
-        <p><strong>Glass Type:</strong> ${glassType}</p>
-        <p><strong>Special Features:</strong> ${specialFeatures}</p>
-        <p><strong>Notes:</strong> ${notes || "No notes provided"}</p>
-
-        <h3>Preferred Appointment</h3>
-        <p><strong>Date:</strong> ${serviceDate}</p>
-        <p><strong>Time Window:</strong> ${appointmentWindow}</p>
-      `,
+      text,
+      html,
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Quote email error:", error);
-
+    // Never log SMTP credentials or full customer request payloads.
+    console.error("QUOTE_SMTP_ERROR", {
+      code: error?.code,
+      command: error?.command,
+      responseCode: error?.responseCode,
+      message: error?.message,
+    });
     return NextResponse.json(
-      { success: false, message: "Email failed to send" },
-      { status: 500 }
+      { success: false, message: "Unable to deliver quote request" },
+      { status: 502 }
     );
   }
 }
