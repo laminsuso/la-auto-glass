@@ -525,6 +525,15 @@ const selectedDateLabel =
             <a href="#quote" className="hover:text-white">Get a quote</a>
           </div>
         </div>
+        <p className="mx-auto mt-6 max-w-7xl px-4 text-xs sm:px-6 lg:px-8">
+          Built by{" "}
+          <a
+            href="https://www.susotech.com"
+            className="font-semibold transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            SusoTech
+          </a>
+        </p>
       </footer>
     </main>
   );
