@@ -395,6 +395,7 @@ const selectedDateLabel =
                 <Field name="firstName" label="First name" placeholder="John" required />
                 <Field name="lastName" label="Last name" placeholder="Doe" required />
                 <Field name="phone" label="Phone number" placeholder="(682) 000-0000" type="tel" required />
+                <Field name="email" label="Email address" placeholder="you@example.com" type="email" required />
                 <Field name="zipCode" label="ZIP code" placeholder="76102" required />
               </div>
 

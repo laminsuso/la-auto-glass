@@ -30,14 +30,20 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: "Invalid JSON" }, { status: 400 });
   }
 
-  const required = ["firstName", "lastName", "phone", "zipCode", "year", "make", "model", "glassType", "serviceDate", "appointmentWindow"];
+  const required = ["firstName", "lastName", "phone", "email", "zipCode", "year", "make", "model", "glassType", "serviceDate", "appointmentWindow"];
   const missing = required.filter((key) => !String(data?.[key] ?? "").trim());
   if (missing.length) {
     return NextResponse.json({ success: false, message: "Missing required fields", fields: missing }, { status: 400 });
   }
 
+  const email = typeof data.email === "string" ? data.email.trim() : "";
+  if (email.length > 254 || !/^[^\s@<>,;"]+@[^\s@<>,;"]+\.[^\s@<>,;"]+$/.test(email)) {
+    return NextResponse.json({ success: false, message: "Enter a valid email address", fields: ["email"] }, { status: 400 });
+  }
+
   const fields = [
     ["Name", `${data.firstName} ${data.lastName}`],
+    ["Email", email],
     ["Phone", data.phone], ["ZIP Code", data.zipCode],
     ["Year", data.year], ["Make", data.make], ["Model", data.model],
     ["VIN", data.vin || "Not provided"], ["Glass Type", data.glassType],
@@ -64,7 +70,7 @@ export async function POST(request) {
     await transporter.sendMail({
       from: `"Leyvas Auto Glass Website" <${user}>`,
       to: user,
-      replyTo: user,
+      replyTo: { address: email },
       subject: "New Auto Glass Service Request",
       text,
       html,
