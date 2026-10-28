@@ -106,7 +106,8 @@ const selectedDateLabel =
     event.preventDefault();
     setSubmitError("");
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
 
     try {
@@ -128,7 +129,7 @@ const selectedDateLabel =
       }
 
       setSubmitted(true);
-      event.currentTarget.reset();
+      form.reset();
       setSelectedTime("");
     } catch (error) {
       setSubmitError("Something went wrong. Please call or text us directly at (682) 392-0431.");
