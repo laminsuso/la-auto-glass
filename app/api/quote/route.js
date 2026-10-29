@@ -1,15 +1,8 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { quoteEmail } from "./email-template.mjs";
 
 export const runtime = "nodejs";
-
-const escapeHtml = (value) =>
-  String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 export async function POST(request) {
   const user = process.env.GMAIL_USER?.trim();
@@ -41,20 +34,7 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: "Enter a valid email address", fields: ["email"] }, { status: 400 });
   }
 
-  const fields = [
-    ["Name", `${data.firstName} ${data.lastName}`],
-    ["Email", email],
-    ["Phone", data.phone], ["ZIP Code", data.zipCode],
-    ["Year", data.year], ["Make", data.make], ["Model", data.model],
-    ["VIN", data.vin || "Not provided"], ["Glass Type", data.glassType],
-    ["Special Features", data.specialFeatures || "None"],
-    ["Notes", data.notes || "No notes provided"],
-    ["Date", data.serviceDate], ["Time Window", data.appointmentWindow],
-  ];
-  const html = `<h2>New Auto Glass Service Request</h2>${fields
-    .map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`)
-    .join("")}`;
-  const text = fields.map(([label, value]) => `${label}: ${String(value ?? "")}`).join("\n");
+  const { html, text } = quoteEmail(data, email);
 
   try {
     const transporter = nodemailer.createTransport({
